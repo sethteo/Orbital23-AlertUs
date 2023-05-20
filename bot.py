@@ -1,14 +1,19 @@
 import logging
+import scraper
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 API_TOKEN = '5660209243:AAFa6yf8AuxLLq2spli4NTjTLj03lGKA1_Q'
-WELCOME_TEXT = "Hi I am the AlertUs Bot and can help you to track the prices of your items." \
-               " Please select one of the options to continue"
+WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
+               "\nPlease type /begin to continue or /help if you need help"
+HELP_TEXT = "After entering or clicking /begin. \nChoose one of the options stated. " \
+            "\nInsert the link of an item from the selected site"
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
@@ -22,15 +27,20 @@ keyboard = InlineKeyboardMarkup().add(button_1, button_2)
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
-    """
-    This handler will be called when user sends `/start` command
-    """
+    # This handler will be called when user sends `/start` command
     await message.reply(WELCOME_TEXT)
+
+
+@dp.message_handler(commands=['help'])
+async def send_welcome(message: types.Message):
+    # This handler will be called when user sends `/help` command
+    await message.reply(HELP_TEXT)
 
 
 @dp.message_handler(commands=['begin'])
 async def begin(message: types.Message):
-    await message.reply("Select an option", reply_markup=keyboard)
+    # This handler will be called when user sends `/begin` command
+    await message.reply("Please select an option", reply_markup=keyboard)
 
 
 @dp.callback_query_handler(text=["1", "2"])
