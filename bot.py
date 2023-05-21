@@ -76,13 +76,19 @@ async def process_name(message: types.Message, state: FSMContext):
 
 
 def foo1(url):
-    current_price = scrape_ntuc(url)
-    return f"The current price is {current_price}, I will notify you when it drops below it"
+    try:
+        current_price = scrape_ntuc(url)
+        return f"The current price is {current_price}, I will notify you when it drops below it"
+    except:
+        return "Please select the option again and input a valid link"
 
 
 def foo2(url):
-    current_price = scrape_cs(url)
-    return f"The current price is {current_price}, I will notify you when it drops below it"
+    try:
+        current_price = scrape_cs(url)
+        return f"The current price is {current_price}, I will notify you when it drops below it"
+    except:
+        return "Please select the option again and input a valid link"
 
 
 if __name__ == '__main__':
