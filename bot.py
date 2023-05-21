@@ -1,9 +1,11 @@
 import logging
 from scraper import scrape_ntuc, scrape_cs
 
-from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 API_TOKEN = '5660209243:AAFa6yf8AuxLLq2spli4NTjTLj03lGKA1_Q'
 WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
@@ -18,7 +20,13 @@ logger = logging.getLogger(__name__)
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+storage = MemoryStorage()
+dp = Dispatcher(bot, storage=storage)
+
+
+class Form(StatesGroup):
+    state_ntuc = State()
+    state_cs = State()
 
 
 button_1 = InlineKeyboardButton(text="NTUC", callback_data="1")
@@ -47,18 +55,34 @@ async def begin(message: types.Message):
 @dp.callback_query_handler(text=["1", "2"])
 async def function(call: types.callback_query):
     if call.data == "1":
-        await call.message.answer(foo1())
+        await Form.state_ntuc.set()
+        await call.message.answer("Send me the link from NTUC :)")
     if call.data == "2":
-        await call.message.answer(foo2())
+        await Form.state_cs.set()
+        await call.message.answer("Send me the link from Cold Storage :)")
     await call.answer()
 
 
-def foo1():
-    return scrape_ntuc("https://www.fairprice.com.sg/product/aw-s-market-fresh-malaysian-pork-big-spare-ribs-300-g-90110551")
+@dp.message_handler(state=Form.state_ntuc)
+async def process_name(message: types.Message, state: FSMContext):
+    await state.finish()
+    await message.reply(foo1(message.text))
 
 
-def foo2():
-    return scrape_cs("https://coldstorage.com.sg/meadows-roasted-cashews-150g-5071784")
+@dp.message_handler(state=Form.state_cs)
+async def process_name(message: types.Message, state: FSMContext):
+    await state.finish()
+    await message.reply(foo2(message.text))
+
+
+def foo1(url):
+    current_price = scrape_ntuc(url)
+    return f"The current price is {current_price}, I will notify you when it drops below it"
+
+
+def foo2(url):
+    current_price = scrape_cs(url)
+    return f"The current price is {current_price}, I will notify you when it drops below it"
 
 
 if __name__ == '__main__':
