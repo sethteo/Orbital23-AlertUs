@@ -1,8 +1,9 @@
 import logging
-import scraper
+from scraper import scrape_ntuc, scrape_cs
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 
 API_TOKEN = '5660209243:AAFa6yf8AuxLLq2spli4NTjTLj03lGKA1_Q'
 WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
@@ -20,8 +21,8 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
 
-button_1 = InlineKeyboardButton(text="Shopee", callback_data="1")
-button_2 = InlineKeyboardButton(text="Lazada", callback_data="2")
+button_1 = InlineKeyboardButton(text="NTUC", callback_data="1")
+button_2 = InlineKeyboardButton(text="Cold Storage", callback_data="2")
 keyboard = InlineKeyboardMarkup().add(button_1, button_2)
 
 
@@ -53,11 +54,11 @@ async def function(call: types.callback_query):
 
 
 def foo1():
-    return "Shopee"
+    return scrape_ntuc("https://www.fairprice.com.sg/product/aw-s-market-fresh-malaysian-pork-big-spare-ribs-300-g-90110551")
 
 
 def foo2():
-    return "Lazada"
+    return scrape_cs("https://coldstorage.com.sg/meadows-roasted-cashews-150g-5071784")
 
 
 if __name__ == '__main__':
