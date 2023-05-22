@@ -1,6 +1,5 @@
 import logging
 from scraper import scrape_ntuc, scrape_cs
-
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -32,6 +31,12 @@ class Form(StatesGroup):
 button_1 = InlineKeyboardButton(text="NTUC", callback_data="1")
 button_2 = InlineKeyboardButton(text="Cold Storage", callback_data="2")
 keyboard = InlineKeyboardMarkup().add(button_1, button_2)
+
+
+# helper method to obtain current user's username
+def my_handler(message: types.Message):
+    user = types.User.get_current()
+    return user.username
 
 
 @dp.message_handler(commands=['start'])
@@ -66,26 +71,28 @@ async def function(call: types.callback_query):
 @dp.message_handler(state=Form.state_ntuc)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.reply(foo1(message.text))
+    await message.reply(foo1(message.text, my_handler(message)))
 
 
 @dp.message_handler(state=Form.state_cs)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.reply(foo2(message.text))
+    await message.reply(foo2(message.text, my_handler(message)))
 
 
-def foo1(url):
+def foo1(url, username):
     try:
         current_price = scrape_ntuc(url)
+        print(username)
         return f"The current price is {current_price}, I will notify you when it drops below it"
     except:
         return "Please select the option again and input a valid link"
 
 
-def foo2(url):
+def foo2(url, username):
     try:
         current_price = scrape_cs(url)
+        print(username)
         return f"The current price is {current_price}, I will notify you when it drops below it"
     except:
         return "Please select the option again and input a valid link"
