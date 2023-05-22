@@ -1,4 +1,5 @@
 import logging
+from database import check_user_slots
 from scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
@@ -71,27 +72,37 @@ async def function(call: types.callback_query):
 @dp.message_handler(state=Form.state_ntuc)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.reply(foo1(message.text, my_handler(message)))
+    # Checks if user has sufficient slots
+    if check_user_slots(my_handler(message)):
+        await message.reply(track_ntuc(message.text, my_handler(message)))
+    # Else prints out error message
+    else:
+        await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
 
 
 @dp.message_handler(state=Form.state_cs)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.reply(foo2(message.text, my_handler(message)))
+    # Checks if user has sufficient slots
+    if check_user_slots(my_handler(message)):
+        await message.reply(track_cs(message.text, my_handler(message)))
+    # Else prints out error message
+    else:
+        await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
 
 
-def foo1(url, username):
+def track_ntuc(url, username):
     try:
-        current_price = scrape_ntuc(url)
+        current_price = scrape_ntuc(url, username)
         print(username)
         return f"The current price is {current_price}, I will notify you when it drops below it"
     except:
         return "Please select the option again and input a valid link"
 
 
-def foo2(url, username):
+def track_cs(url, username):
     try:
-        current_price = scrape_cs(url)
+        current_price = scrape_cs(url, username)
         print(username)
         return f"The current price is {current_price}, I will notify you when it drops below it"
     except:
