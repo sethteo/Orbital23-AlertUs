@@ -22,10 +22,12 @@ def check_exist(username):
 
 
 # Creates a new user with default parameters
-def create_new_user(username):
+def create_new_user(username, tele_id):
     new_user = {
+        "tele_id": tele_id,
         "name": username,
         "itemUrl": "",
+        "item_name": "",
         "price": [],
         "slots": 1
     }
@@ -33,30 +35,26 @@ def create_new_user(username):
 
 
 # Adds an item to an existing user
-def add_item(url, price, username):
+def add_item(url, price, item_name, username):
     current_user = users.find_one({"name": username})
     users.update_one({"name": username}, {"$set": {"itemUrl": url}})
+    users.update_one({"name": username}, {"$set": {"item_name": item_name}})
     users.update_one({"name": username}, {"$push": {"price": price}})
     users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] - 1}})
 
 
 # Removes the item from an existing user
-'''Can consider doing an index deletion'''
-
-
-def remove_item(username):
+def remove_item(username, index):
     current_user = users.find_one({"name": username})
     users.update_one({"name": username}, {"$set": {"itemUrl": ""}})
     users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] + 1}})
 
 
+def list_item(username):
+    current_user = users.find_one({"name": username})
+    return current_user["item_name"]
 
 
+def get_users():
+    return users.find()
 
-
-test_user = {
-    "name": "mightbehr",
-    "itemUrl": "url",
-    "price": [1, 2, 3],
-    "slots": 1
-}
