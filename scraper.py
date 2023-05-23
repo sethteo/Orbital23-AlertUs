@@ -1,53 +1,69 @@
-import requests
-from bs4 import BeautifulSoup
-from database import check_exist, create_new_user, add_item
+from pymongo import MongoClient
+import certifi
+import bson
+
+cluster = "mongodb+srv://sethteo:7mkyhyUofIqFaeoP@orbitalalertus.ibhfals.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(cluster, tlsCAFile=certifi.where())
+db = client.orbital
+users = db.users
 
 
-# Scraping function that handles url from NTUC
-def scrape_ntuc(url, username):
-    result = scrape_helper(url, "ntuc")
-    price = result[0]
-    item_name = result[1]
-    add_to_db(url, price, item_name, username)
-    return price
+# Checks if user has any saved slots left
+def check_user_slots(username):
+    try:
+        current_user = users.find_one({"name": username})
+        return current_user["slots"] > 0
+    except TypeError:
+        return True
 
 
-# Scraping function that handles url from Cold Storage
-def scrape_cs(url, username):
-    result = scrape_helper(url, "cs")
-    price = result[0]
-    item_name = result[1]
-    add_to_db(url, price, item_name, username)
-    return price
+# Checks based on username if user exists in database, returns true if user exists
+def check_exist(username):
+    return users.count_documents({"name": username}) > 0
 
 
-# Helper method to facilitate user creation and user update
-def add_to_db(url, price, item_name, username):
-    if check_exist(username):
-        add_item(url, price, item_name, username)
-    else:
-        create_new_user(username)
-        add_item(url, price, item_name, username)
+# Creates a new user with default parameters
+def create_new_user(username, tele_id):
+    new_user = {
+        "tele_id": tele_id,
+        "name": username,
+        "itemUrl": "",
+        "item_name": "",
+        "price": [],
+        "slots": 1
+    }
+    users.insert_one(new_user)
 
 
-# Helper method to facilitate scraping and to reduce redundant code
-def scrape_helper(url, store_type):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
+# Adds an item to an existing user
+def add_item(url, price, item_name, username):
+    current_user = users.find_one({"name": username})
+    users.update_one({"name": username}, {"$set": {"itemUrl": url}})
+    users.update_one({"name": username}, {"$set": {"item_name": item_name}})
+    users.update_one({"name": username}, {"$push": {"price": price}})
+    users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] - 1}})
 
-    if store_type == "ntuc":
-        price_element = soup.find("span", class_="sc-1bsd7ul-1 sc-13n2dsm-5 fQJDmX cpRMKK")
-        item_element = soup.find("span", class_="sc-1bsd7ul-1 beGvbz")
-        price = price_element.text.strip()
-        item_name = item_element.text.strip()
-        print(price, item_name)
-        return [price, item_name]
 
-    elif store_type == "cs":
-        product = soup.find("div", class_="product-detail")
-        price_data = product.find("div", class_="price_now price_normal f-green disc")
-        name_data = product.find("h1", class_="product-name main-heading")
-        price = price_data.text.strip()
-        item_name = name_data.text.strip()
-        print(price, item_name)
-        return [price, item_name]
+# Removes the item from an existing user
+def remove_item(username, index):
+    current_user = users.find_one({"name": username})
+    users.update_one({"name": username}, {"$set": {"itemUrl": ""}})
+    users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] + 1}})
+
+
+def list_item(username):
+    current_user = users.find_one({"name": username})
+    return current_user["item_name"]
+
+
+def check_price():
+    for user in users.find():
+        prices = user["price"]
+        initial = float(prices[0].replace('$', ''))
+        for price in prices:
+            price_in_float = float(price.replace('$', ''))
+            if price_in_float < initial:
+                return [user["tele_id"], price]
+    return None
+
+
