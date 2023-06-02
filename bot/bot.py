@@ -1,8 +1,8 @@
 import logging
 import os
 from dotenv import load_dotenv
-from database import check_user_slots, remove_item
-from scraper import scrape_ntuc, scrape_cs
+from database.database import check_user_slots, remove_item
+from bot_logic.scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage

@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from database import check_exist, create_new_user, add_item
+from database.database import check_exist, create_new_user, add_item
 
 
 # Scraping function that handles url from NTUC
