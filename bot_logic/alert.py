@@ -1,7 +1,6 @@
 import time
-from database import get_users
-from bot import alert
-from scraper import scrape_helper
+from database.database import get_users
+from bot.bot import alert
 import asyncio
 
 users = get_users()
