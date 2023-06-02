@@ -1,7 +1,11 @@
+import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
 import certifi
 
-cluster = "mongodb+srv://sethteo:7mkyhyUofIqFaeoP@orbitalalertus.ibhfals.mongodb.net/?retryWrites=true&w=majority"
+load_dotenv()
+
+cluster = os.getenv('MONGO_CLUSTER')
 client = MongoClient(cluster, tlsCAFile=certifi.where())
 db = client.orbital
 users = db.users
