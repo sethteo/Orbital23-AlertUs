@@ -1,6 +1,6 @@
 import logging
-import aiohttp
-import asyncio
+import os
+from dotenv import load_dotenv
 from database import check_user_slots, remove_item
 from scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -9,7 +9,9 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext, filters
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-API_TOKEN = '5660209243:AAFa6yf8AuxLLq2spli4NTjTLj03lGKA1_Q'
+load_dotenv()
+
+API_TOKEN = os.getenv('BOT_API')
 WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
                "\nPlease type /begin to continue or /help if you need help"
 HELP_TEXT = "After entering or clicking /begin. \nChoose one of the options stated. " \
