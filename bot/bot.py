@@ -66,8 +66,8 @@ async def begin(message: types.Message):
 
 @dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['remove_([1-3]*)']))
 async def remove_helper(message: types.Message, regexp_command):
-    index = regexp_command.group(1)
-    remove_item(my_handler(message)[0], index)
+    index = int(regexp_command.group(1))
+    remove_item(my_handler(message)[0], (index - 1))
     await message.reply(f"Successfully removed item {index}")
 
 
