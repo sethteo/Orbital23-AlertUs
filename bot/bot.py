@@ -14,9 +14,10 @@ load_dotenv()
 API_TOKEN = os.getenv('BOT_API')
 WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
                "\nPlease type /begin to continue or /help if you need help"
-HELP_TEXT = "After entering or clicking /begin. \nChoose one of the options stated. " \
-            "\nInsert the link of an item from the selected site" \
-            "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
+HELP_TEXT = "- After entering or clicking /begin. \n- Choose one of the options stated. " \
+            "\n- Insert the link of an item from the selected site"
+LIST_TEXT = "\nTo view all saved items please reply '/list' "
+REMOVE_TEXT = "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
 
 # Configure logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -39,45 +40,61 @@ button_2 = InlineKeyboardButton(text="Cold Storage", callback_data="2")
 keyboard = InlineKeyboardMarkup().add(button_1, button_2)
 
 
-# helper method to obtain current user's username
+# Helper method to obtain current user's username
 def my_handler(message: types.Message):
     username = types.User.get_current().username
     tele_id = types.User.get_current().id
     return [username, tele_id]
 
 
+# This handler will be called when user sends `/start` command
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
-    # This handler will be called when user sends `/start` command
+    # Prints out welcome text
     await message.reply(WELCOME_TEXT)
 
 
+# This handler will be called when user sends `/help` command
 @dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
-    # This handler will be called when user sends `/help` command
+    # Prints out help text
+    help_photo = open('../images/help.png', "rb")
+    list_photo = open('../images/list.png', "rb")
+    remove_photo = open('../images/remove.png', "rb")
+    await bot.send_photo(chat_id=message.chat.id, photo=help_photo)
     await message.reply(HELP_TEXT)
+    await bot.send_photo(chat_id=message.chat.id, photo=list_photo)
+    await message.reply(LIST_TEXT)
+    await bot.send_photo(chat_id=message.chat.id, photo=remove_photo)
+    await message.reply(REMOVE_TEXT)
 
 
+# This handler will be called when user sends `/begin` command
 @dp.message_handler(commands=['begin'])
 async def begin(message: types.Message):
-    # This handler will be called when user sends `/begin` command
+    # Gives user the inline keyboard options of "NTUC" or "Cold Storage"
     await message.reply("Please select an option", reply_markup=keyboard)
 
 
+# This handler will be called when user sends `/list` command
 @dp.message_handler(commands=['list'])
 async def begin(message: types.Message):
-    # This handler will be called when user sends `/list` command
+    # Lists out all saved items of current user
     for item in list_item(my_handler(message)[0]):
         await message.reply(item["item_name"])
 
 
+# This handler will be called when user sends /remove_"index"
 @dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['remove_([1-3]*)']))
 async def remove_helper(message: types.Message, regexp_command):
     index = int(regexp_command.group(1))
+    # Removes the item of the user based on the given index
     remove_item(my_handler(message)[0], (index - 1))
     await message.reply(f"Successfully removed item {index}")
 
 
+# This handler is called after the "NTUC" or "Cold Storage" button is pressed after /begin command
+# Is used to set the state to either "NTUC" or "Cold Storage"
 @dp.callback_query_handler(text=["1", "2"])
 async def function(call: types.callback_query):
     if call.data == "1":
@@ -89,6 +106,7 @@ async def function(call: types.callback_query):
     await call.answer()
 
 
+# This handler is called if state is "NTUC"
 @dp.message_handler(state=Form.state_ntuc)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
@@ -100,6 +118,7 @@ async def process_name(message: types.Message, state: FSMContext):
         await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
 
 
+# This handler is called if state is "Cold Storage"
 @dp.message_handler(state=Form.state_cs)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
@@ -111,10 +130,12 @@ async def process_name(message: types.Message, state: FSMContext):
         await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
 
 
+# Helper method to be called if an item drops in price
 async def alert(chat_id, price):
     await bot.send_message(chat_id=chat_id, text=f"Alert, your item has just dropped to {price}")
 
 
+# Helper method to aid in tracking of NTUC items
 def track_ntuc(url, username, tele_id):
     try:
         current_price = scrape_ntuc(url, username, tele_id)
@@ -124,6 +145,7 @@ def track_ntuc(url, username, tele_id):
         return "Please select the option again and input a valid link"
 
 
+# Helper method to aid in tracking of Cold Storage items
 def track_cs(url, username, tele_id):
     try:
         current_price = scrape_cs(url, username, tele_id)
