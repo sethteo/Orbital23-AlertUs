@@ -31,7 +31,7 @@ def create_new_user(username, tele_id):
         "tele_id": tele_id,
         "name": username,
         "items": [],
-        "slots": 1,
+        "slots": 3,
     }
     users.insert_one(new_user)
 

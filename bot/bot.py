@@ -1,7 +1,7 @@
 import logging
 import os
 from dotenv import load_dotenv
-from database.database import check_user_slots, remove_item
+from database.database import check_user_slots, remove_item, list_item
 from bot_logic.scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
@@ -62,6 +62,13 @@ async def send_welcome(message: types.Message):
 async def begin(message: types.Message):
     # This handler will be called when user sends `/begin` command
     await message.reply("Please select an option", reply_markup=keyboard)
+
+
+@dp.message_handler(commands=['list'])
+async def begin(message: types.Message):
+    # This handler will be called when user sends `/list` command
+    for item in list_item(my_handler(message)[0]):
+        await message.reply(item["item_name"])
 
 
 @dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['remove_([1-3]*)']))
