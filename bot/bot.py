@@ -14,10 +14,10 @@ load_dotenv()
 API_TOKEN = os.getenv('BOT_API')
 WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
                "\nPlease type /begin to continue or /help if you need help"
-HELP_TEXT = "After entering or clicking /begin. \nChoose one of the options stated. " \
-            "\nInsert the link of an item from the selected site" \
-            "\nTo view all saved items please reply '/list' "\
-            "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
+HELP_TEXT = "- After entering or clicking /begin. \n- Choose one of the options stated. " \
+            "\n- Insert the link of an item from the selected site"
+LIST_TEXT = "\nTo view all saved items please reply '/list' "
+REMOVE_TEXT = "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
 
 # Configure logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -58,7 +58,15 @@ async def send_welcome(message: types.Message):
 @dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
     # Prints out help text
+    help_photo = open('../images/help.png', "rb")
+    list_photo = open('../images/list.png', "rb")
+    remove_photo = open('../images/remove.png', "rb")
+    await bot.send_photo(chat_id=message.chat.id, photo=help_photo)
     await message.reply(HELP_TEXT)
+    await bot.send_photo(chat_id=message.chat.id, photo=list_photo)
+    await message.reply(LIST_TEXT)
+    await bot.send_photo(chat_id=message.chat.id, photo=remove_photo)
+    await message.reply(REMOVE_TEXT)
 
 
 # This handler will be called when user sends `/begin` command
