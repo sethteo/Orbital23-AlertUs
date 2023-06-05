@@ -30,10 +30,8 @@ def create_new_user(username, tele_id):
     new_user = {
         "tele_id": tele_id,
         "name": username,
-        "itemUrl": "",
-        "item_name": "",
-        "price": [],
-        "slots": 1
+        "items": [],
+        "slots": 3,
     }
     users.insert_one(new_user)
 
@@ -41,24 +39,28 @@ def create_new_user(username, tele_id):
 # Adds an item to an existing user
 def add_item(url, price, item_name, username):
     current_user = users.find_one({"name": username})
-    users.update_one({"name": username}, {"$set": {"itemUrl": url}})
-    users.update_one({"name": username}, {"$set": {"item_name": item_name}})
-    users.update_one({"name": username}, {"$push": {"price": price}})
+    new_item = {
+        "itemUrl": url,
+        "item_name": item_name,
+        "price": price,
+    }
+    users.update_one({"name": username}, {"$push": {"items": new_item}})
     users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] - 1}})
 
 
 # Removes the item from an existing user
 def remove_item(username, index):
     current_user = users.find_one({"name": username})
-    users.update_one({"name": username}, {"$set": {"itemUrl": ""}})
+    item_to_remove = ((current_user["items"])[index])["itemUrl"]
+    print(item_to_remove)
     users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] + 1}})
+    users.update_one({"name": username}, {"$pull": {"items": {"itemUrl": item_to_remove}}})
 
 
 def list_item(username):
     current_user = users.find_one({"name": username})
-    return current_user["item_name"]
+    return current_user["items"]
 
 
 def get_users():
     return users.find()
-

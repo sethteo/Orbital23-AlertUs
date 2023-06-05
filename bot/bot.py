@@ -1,8 +1,8 @@
 import logging
 import os
 from dotenv import load_dotenv
-from database import check_user_slots, remove_item
-from scraper import scrape_ntuc, scrape_cs
+from database.database import check_user_slots, remove_item, list_item
+from bot_logic.scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -64,10 +64,17 @@ async def begin(message: types.Message):
     await message.reply("Please select an option", reply_markup=keyboard)
 
 
+@dp.message_handler(commands=['list'])
+async def begin(message: types.Message):
+    # This handler will be called when user sends `/list` command
+    for item in list_item(my_handler(message)[0]):
+        await message.reply(item["item_name"])
+
+
 @dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['remove_([1-3]*)']))
 async def remove_helper(message: types.Message, regexp_command):
-    index = regexp_command.group(1)
-    remove_item(my_handler(message)[0], index)
+    index = int(regexp_command.group(1))
+    remove_item(my_handler(message)[0], (index - 1))
     await message.reply(f"Successfully removed item {index}")
 
 
