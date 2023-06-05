@@ -81,9 +81,12 @@ async def begin(message: types.Message):
 async def begin(message: types.Message):
     # Lists out all saved items of current user
     items = list_item(my_handler(message)[0])
+    print(len(items))
+
     if items:
-        for item in items:
-            await message.reply(item["item_name"])
+        for i in range(1, len(items) + 1):
+            item = items[i - 1]
+            await message.reply(f"{i}. {item['item_name']}")
     else:
         await message.reply("You do not have any saved items")
 
