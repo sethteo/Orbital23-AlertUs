@@ -1,7 +1,9 @@
 import logging
 import os
+import time
+import asyncio
 from dotenv import load_dotenv
-from database.database import check_user_slots, remove_item, list_item
+from database.database import check_user_slots, remove_item, list_item, get_users
 from bot_logic.scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
@@ -14,7 +16,8 @@ load_dotenv()
 API_TOKEN = os.getenv('BOT_API')
 WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
                "\nPlease type /begin to continue or /help if you need help"
-HELP_TEXT = "- After entering or clicking /begin. \n- Choose one of the options stated. " \
+HELP_TEXT = "Basic tier members are given 3 item slots"\
+            "\n- After entering or clicking /begin. \n- Choose one of the options stated. " \
             "\n- Insert the link of an item from the selected site"
 LIST_TEXT = "\nTo view all saved items please reply '/list' "
 REMOVE_TEXT = "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"

@@ -44,8 +44,8 @@ def scrape_helper(url):
         return [price, item_name]
 
     elif "coldstorage" in url:
-        product = soup.find("div", class_="product-detail")
-        price_data = product.find("div", class_="price_now price_normal f-green disc")
+        product = soup.find("div", id="product-info-content")
+        price_data = product.find("div", class_="content_price")
         name_data = product.find("h1", class_="product-name main-heading")
         price = price_data.text.strip()
         item_name = name_data.text.strip()
