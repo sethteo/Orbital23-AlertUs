@@ -80,8 +80,15 @@ async def begin(message: types.Message):
 @dp.message_handler(commands=['list'])
 async def begin(message: types.Message):
     # Lists out all saved items of current user
-    for item in list_item(my_handler(message)[0]):
-        await message.reply(item["item_name"])
+    items = list_item(my_handler(message)[0])
+    print(len(items))
+
+    if items:
+        for i in range(1, len(items) + 1):
+            item = items[i - 1]
+            await message.reply(f"{i}. {item['item_name']}")
+    else:
+        await message.reply("You do not have any saved items")
 
 
 # This handler will be called when user sends /remove_"index"
@@ -89,8 +96,12 @@ async def begin(message: types.Message):
 async def remove_helper(message: types.Message, regexp_command):
     index = int(regexp_command.group(1))
     # Removes the item of the user based on the given index
-    remove_item(my_handler(message)[0], (index - 1))
-    await message.reply(f"Successfully removed item {index}")
+    try:
+        remove_item(my_handler(message)[0], (index - 1))
+        await message.reply(f"Successfully removed item {index}")
+    # Catches index out of bounds error, e.g. when user inputs an index not in range of array
+    except IndexError:
+        await message.reply(f"There is no such item of index {index}")
 
 
 # This handler is called after the "NTUC" or "Cold Storage" button is pressed after /begin command
