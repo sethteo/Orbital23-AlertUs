@@ -11,6 +11,7 @@ while True:
         price = get_lowest_price(current_user)
         if price:
             asyncio.run(alert(current_user["tele_id"], price))
-            break
-    time.sleep(10)
+            time.sleep(10)
+
+
 

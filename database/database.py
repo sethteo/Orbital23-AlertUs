@@ -69,12 +69,19 @@ def get_users():
 # url = "https://www.fairprice.com.sg/product/authentic-tea-house-ayataka-no-sugar-japanese-green-tea-12-x-300ml-13083578"
 # users.update_one({"name":"mightbehr", "items.itemUrl": url}, {"$push": {"items.$.price": "5.90"}})
 
+
 def get_lowest_price(user):
     items = user["items"]
     for item in items:
         prices = item["price"]
-        latest_price = prices[-1]
-        if latest_price > prices[0]:
-            return latest_price
+        initial = float(prices[0].replace('$', ''))
+        latest_price = float(prices[-1].replace('$', ''))
+        if latest_price < initial:
+            return prices[-1]
         else:
             return None
+
+#users.update_one({"name":"mightbehr", "items.itemUrl": url}, {"$push": {"items.$.price": "$5.80"}})
+
+# test = users.find_one({"name": "mightbehr"})
+# get_lowest_price(test)
