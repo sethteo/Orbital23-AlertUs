@@ -1,6 +1,6 @@
 import time
 from database.database import get_users, get_lowest_price
-from bot.bot import alert
+from bot import alert
 import asyncio
 
 users = get_users()
