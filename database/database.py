@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+import pymongo
 import certifi
 
 load_dotenv()
 
 cluster = os.getenv('MONGO_CLUSTER')
-client = MongoClient(cluster, tlsCAFile=certifi.where())
+client = pymongo.MongoClient(cluster, tlsCAFile=certifi.where())
 db = client.orbital
 users = db.users
 
@@ -66,8 +67,8 @@ def get_users():
     return users.find()
 
 # code to update price
-# url = "https://www.fairprice.com.sg/product/authentic-tea-house-ayataka-no-sugar-japanese-green-tea-12-x-300ml-13083578"
-# users.update_one({"name":"mightbehr", "items.itemUrl": url}, {"$push": {"items.$.price": "5.90"}})
+# url = "https://www.fairprice.com.sg/product/fairprice-adult-diaper-pants-m-10-per-pack-13180730"
+# users.update_one({"name":"mightbehr", "items.itemUrl": url}, {"$push": {"items.$.price": "$12.80"}})
 
 
 def get_lowest_price(user):
@@ -77,7 +78,8 @@ def get_lowest_price(user):
         initial = float(prices[0].replace('$', ''))
         latest_price = float(prices[-1].replace('$', ''))
         if latest_price < initial:
-            return prices[-1]
+            result = [prices[-1], item['item_name']]
+            return result
         else:
             return None
 
@@ -85,3 +87,6 @@ def get_lowest_price(user):
 
 # test = users.find_one({"name": "mightbehr"})
 # get_lowest_price(test)
+
+# print(test)
+
