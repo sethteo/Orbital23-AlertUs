@@ -145,8 +145,8 @@ async def process_name(message: types.Message, state: FSMContext):
 
 
 # Helper method to be called if an item drops in price
-async def alert(chat_id, price):
-    await bot.send_message(chat_id=chat_id, text=f"Alert, your item has just dropped to {price}")
+async def alert(chat_id, price, item_name):
+    await bot.send_message(chat_id=chat_id, text=f"Alert, your item: {item_name} has just dropped to {price}")
 
 
 # Helper method to aid in tracking of NTUC items
