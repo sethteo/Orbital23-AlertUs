@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 function Item() {
-    return(
+    useEffect(() => {
+        fetchItems();
+    }, []);
+
+    const [items, setItems] = useState([]);
+
+    const fetchItems = async () => {
+        const data = await fetch('/items');
+        const items = await data.json();
+        setItems(items)
+    };
+
+    return (
         <section>
-            <div class='container-fluid'>
-                <h1>Welcome</h1>
-                <p>This is the itempage</p>
-            </div>
+            {
+                items.map(item => (
+                    <div>
+                        <p>{ item.name }</p>
+                        <p>{ item.msg }</p>
+                        <p>{ item.username }</p>
+                    </div>
+                ))
+            }
         </section>
+
     );
 }
 
