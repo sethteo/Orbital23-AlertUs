@@ -66,3 +66,21 @@ def list_item(username):
 def get_users():
     return users.find()
 
+
+def append_price(url, name, price):
+    users.update_one({"name": name, "items.itemUrl": url}, {"$push": {"items.$.price": price}})
+
+
+def compare_price(user):
+    items = user["items"]
+    for item in items:
+        prices = item["price"]
+        initial_price = float(item['initial_price'].replace('$', ''))
+        latest_price = float(prices[-1].replace('$', ''))
+        if latest_price < initial_price:
+            result = [prices[-1], item['item_name']]
+            return result
+        else:
+            print('Initial price is the lowest price currently')
+            return None
+
