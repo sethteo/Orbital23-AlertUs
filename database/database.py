@@ -66,27 +66,3 @@ def list_item(username):
 def get_users():
     return users.find()
 
-# code to update price
-# url = "https://www.fairprice.com.sg/product/fairprice-adult-diaper-pants-m-10-per-pack-13180730"
-# users.update_one({"name":"mightbehr", "items.itemUrl": url}, {"$push": {"items.$.price": "$12.80"}})
-
-
-def get_lowest_price(user):
-    items = user["items"]
-    for item in items:
-        prices = item["price"]
-        initial = float(prices[0].replace('$', ''))
-        latest_price = float(prices[-1].replace('$', ''))
-        if latest_price < initial:
-            result = [prices[-1], item['item_name']]
-            return result
-        else:
-            return None
-
-#users.update_one({"name":"mightbehr", "items.itemUrl": url}, {"$push": {"items.$.price": "$5.80"}})
-
-# test = users.find_one({"name": "mightbehr"})
-# get_lowest_price(test)
-
-# print(test)
-
