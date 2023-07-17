@@ -186,6 +186,7 @@ def track_cs(url, username, tele_id):
         return "Please select the option again and input a valid link"
 
 
+# This handler will be called when user sends /graph_"index"
 @dp.message_handler(regexp_commands=["graph_([1-3]*)"])
 async def send_welcome(message: types.Message, regexp_command):
     try:
@@ -193,11 +194,13 @@ async def send_welcome(message: types.Message, regexp_command):
         username = types.User.get_current().username
         item_name = get_item(username, index)[1]
         data = get_item(username, index)[0]
+        # Plotting the graph
         plt.plot(data, "o-")
         plt.xlabel("Time")
         plt.ylabel("Price")
         plt.title("Price Changes Over Time")
-        buffer = io.BytesIO()  # Create an in-memory buffer
+        # Create an in-memory buffer
+        buffer = io.BytesIO()  
         time_points = [
             "Jan",
             "Feb",
@@ -211,8 +214,10 @@ async def send_welcome(message: types.Message, regexp_command):
             "Oct",
         ]  # TO CHANGE
         plt.xticks(range(len(data)), time_points)
-        plt.savefig(buffer, format="png")  # Save the plot to the buffer
-        buffer.seek(0)  # Move the buffer's cursor to the beginning
+        # Save the plot to the buffer
+        plt.savefig(buffer, format="png")  
+        # Move the buffer's cursor to the beginning
+        buffer.seek(0)  
 
         image = Image.open(buffer)
         photo = buffer.getvalue()
