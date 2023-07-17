@@ -84,3 +84,12 @@ def compare_price(user):
             print('Initial price is the lowest price currently')
             return None
 
+
+def get_item(username, index):
+    current_user = users.find_one({"name": username})
+    prices = current_user['items'][index - 1]['price']
+    item_name = current_user['items'][index - 1]['item_name']
+    updated_prices = []
+    for price in prices:
+        updated_prices.append(float(price.replace('$', '')))
+    return [updated_prices, item_name]
