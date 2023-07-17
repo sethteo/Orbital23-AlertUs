@@ -1,17 +1,16 @@
 import logging
 import os
-import time
-import asyncio
+import io
+import matplotlib.pyplot as plt
+from PIL import Image
 from dotenv import load_dotenv
-from database.database import check_user_slots, remove_item, list_item, get_users
+from database.database import check_user_slots, remove_item, list_item, get_item
 from bot_logic.scraper import scrape_ntuc, scrape_cs
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext, filters
 from aiogram.dispatcher.filters.state import State, StatesGroup
-import matplotlib.pyplot as plt
-
 
 load_dotenv()
 
@@ -171,20 +170,27 @@ def track_cs(url, username, tele_id):
         return "Please select the option again and input a valid link"
 
 
+@dp.message_handler(regexp_commands=['graph_([1-3]*)'])
+async def send_welcome(message: types.Message, regexp_command):
+    index = int(regexp_command.group(1))
+    username = types.User.get_current().username
+    item_name = get_item(username, index)[1]
+    data = get_item(username, index)[0]
+    plt.plot(data)
+    plt.xlabel('Time')
+    plt.ylabel('Price')
+    plt.title('Price Changes Over Time')
+    buffer = io.BytesIO()  # Create an in-memory buffer
+    plt.savefig(buffer, format='png')  # Save the plot to the buffer
+    buffer.seek(0)  # Move the buffer's cursor to the beginning
+
+    image = Image.open(buffer)
+    photo = buffer.getvalue()
+
+    await bot.send_photo(chat_id=message.chat.id, photo=photo)
+    await message.reply(f"This is the graph for item {item_name}")
+
+
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
 
-data = [11, 22, 13, 4, 5, 16, 72, 8, 9, 10]
-# Plotting the graph
-plt.plot(data)
-
-# Adding labels and title
-plt.xlabel('Time')
-plt.ylabel('Integer Value')
-plt.title('Integer Changes Over Time')
-
-# Save the plot as an image
-plt.savefig('plot.png')
-
-# Display the plot
-plt.show()
