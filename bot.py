@@ -10,6 +10,8 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext, filters
 from aiogram.dispatcher.filters.state import State, StatesGroup
+import matplotlib.pyplot as plt
+
 
 load_dotenv()
 
@@ -172,3 +174,17 @@ def track_cs(url, username, tele_id):
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
 
+data = [11, 22, 13, 4, 5, 16, 72, 8, 9, 10]
+# Plotting the graph
+plt.plot(data)
+
+# Adding labels and title
+plt.xlabel('Time')
+plt.ylabel('Integer Value')
+plt.title('Integer Changes Over Time')
+
+# Save the plot as an image
+plt.savefig('plot.png')
+
+# Display the plot
+plt.show()
