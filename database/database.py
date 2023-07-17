@@ -1,13 +1,13 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
-import pymongo
 import certifi
+import datetime
 
 load_dotenv()
 
 cluster = os.getenv('MONGO_CLUSTER')
-client = pymongo.MongoClient(cluster, tlsCAFile=certifi.where())
+client = MongoClient(cluster, tlsCAFile=certifi.where())
 db = client.orbital
 users = db.users
 
@@ -43,7 +43,9 @@ def add_item(url, price, item_name, username):
     new_item = {
         "itemUrl": url,
         "item_name": item_name,
+        "initial_price": price,
         "price": [price],
+        "date": [str(datetime.date.today())]
     }
     users.update_one({"name": username}, {"$push": {"items": new_item}})
     users.update_one({"name": username}, {"$set": {"slots": current_user["slots"] - 1}})
