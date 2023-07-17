@@ -14,18 +14,23 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 load_dotenv()
 
-API_TOKEN = os.getenv('BOT_API')
-WELCOME_TEXT = "Hello I am the AlertUs Bot and I can help you to track the prices of your items." \
-               "\nPlease type /begin to continue or /help if you need help"
-HELP_TEXT = "Basic tier members are given 3 item slots"\
-            "\n- After entering or clicking /begin. \n- Choose one of the options stated. " \
-            "\n- Insert the link of an item from the selected site"
+API_TOKEN = os.getenv("BOT_API")
+WELCOME_TEXT = (
+    "Hello I am the AlertUs Bot and I can help you to track the prices of your items."
+    "\nPlease type /begin to continue or /help if you need help"
+)
+HELP_TEXT = (
+    "Basic tier members are given 3 item slots"
+    "\n- After entering or clicking /begin. \n- Choose one of the options stated. "
+    "\n- Insert the link of an item from the selected site"
+)
 LIST_TEXT = "\nTo view all saved items please reply '/list' "
 REMOVE_TEXT = "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
 
 # Configure logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 # Initialize bot and dispatcher
@@ -52,19 +57,19 @@ def my_handler(message: types.Message):
 
 
 # This handler will be called when user sends `/start` command
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=["start"])
 async def send_welcome(message: types.Message):
     # Prints out welcome text
     await message.reply(WELCOME_TEXT)
 
 
 # This handler will be called when user sends `/help` command
-@dp.message_handler(commands=['help'])
+@dp.message_handler(commands=["help"])
 async def send_welcome(message: types.Message):
     # Prints out help text
-    help_photo = open('images/help.png', "rb")
-    list_photo = open('images/list.png', "rb")
-    remove_photo = open('images/remove.png', "rb")
+    help_photo = open("images/help.png", "rb")
+    list_photo = open("images/list.png", "rb")
+    remove_photo = open("images/remove.png", "rb")
     await bot.send_photo(chat_id=message.chat.id, photo=help_photo)
     await message.reply(HELP_TEXT)
     await bot.send_photo(chat_id=message.chat.id, photo=list_photo)
@@ -74,14 +79,14 @@ async def send_welcome(message: types.Message):
 
 
 # This handler will be called when user sends `/begin` command
-@dp.message_handler(commands=['begin'])
+@dp.message_handler(commands=["begin"])
 async def begin(message: types.Message):
     # Gives user the inline keyboard options of "NTUC" or "Cold Storage"
     await message.reply("Please select an option", reply_markup=keyboard)
 
 
 # This handler will be called when user sends `/list` command
-@dp.message_handler(commands=['list'])
+@dp.message_handler(commands=["list"])
 async def begin(message: types.Message):
     # Lists out all saved items of current user
     items = list_item(my_handler(message)[0])
@@ -96,7 +101,7 @@ async def begin(message: types.Message):
 
 
 # This handler will be called when user sends /remove_"index"
-@dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=['remove_([1-3]*)']))
+@dp.message_handler(filters.RegexpCommandsFilter(regexp_commands=["remove_([1-3]*)"]))
 async def remove_helper(message: types.Message, regexp_command):
     index = int(regexp_command.group(1))
     # Removes the item of the user based on the given index
@@ -127,10 +132,14 @@ async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
     # Checks if user has sufficient slots
     if check_user_slots(my_handler(message)[0]):
-        await message.reply(track_ntuc(message.text, my_handler(message)[0], my_handler(message)[1]))
+        await message.reply(
+            track_ntuc(message.text, my_handler(message)[0], my_handler(message)[1])
+        )
     # Else prints out error message
     else:
-        await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
+        await message.answer(
+            "Sorry you do not have enough saved slots, please delete an item using /remove"
+        )
 
 
 # This handler is called if state is "Cold Storage"
@@ -139,15 +148,22 @@ async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
     # Checks if user has sufficient slots
     if check_user_slots(my_handler(message)[0]):
-        await message.reply(track_cs(message.text, my_handler(message)[0], my_handler(message)[1]))
+        await message.reply(
+            track_cs(message.text, my_handler(message)[0], my_handler(message)[1])
+        )
     # Else prints out error message
     else:
-        await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
+        await message.answer(
+            "Sorry you do not have enough saved slots, please delete an item using /remove"
+        )
 
 
 # Helper method to be called if an item drops in price
 async def alert(chat_id, price, item_name):
-    await bot.send_message(chat_id=chat_id, text=f"Alert, your item: {item_name} has just dropped to {price}")
+    await bot.send_message(
+        chat_id=chat_id,
+        text=f"Alert, your item: {item_name} has just dropped to {price}",
+    )
 
 
 # Helper method to aid in tracking of NTUC items
@@ -170,19 +186,32 @@ def track_cs(url, username, tele_id):
         return "Please select the option again and input a valid link"
 
 
-@dp.message_handler(regexp_commands=['graph_([1-3]*)'])
+@dp.message_handler(regexp_commands=["graph_([1-3]*)"])
 async def send_welcome(message: types.Message, regexp_command):
     try:
         index = int(regexp_command.group(1))
         username = types.User.get_current().username
         item_name = get_item(username, index)[1]
         data = get_item(username, index)[0]
-        plt.plot(data)
-        plt.xlabel('Time')
-        plt.ylabel('Price')
-        plt.title('Price Changes Over Time')
+        plt.plot(data, "o-")
+        plt.xlabel("Time")
+        plt.ylabel("Price")
+        plt.title("Price Changes Over Time")
         buffer = io.BytesIO()  # Create an in-memory buffer
-        plt.savefig(buffer, format='png')  # Save the plot to the buffer
+        time_points = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+        ]  # TO CHANGE
+        plt.xticks(range(len(data)), time_points)
+        plt.savefig(buffer, format="png")  # Save the plot to the buffer
         buffer.seek(0)  # Move the buffer's cursor to the beginning
 
         image = Image.open(buffer)
@@ -194,6 +223,5 @@ async def send_welcome(message: types.Message, regexp_command):
         await message.answer(f"Sorry you do not have a saved item with index: {index}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
-
