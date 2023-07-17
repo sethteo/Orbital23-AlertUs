@@ -172,23 +172,26 @@ def track_cs(url, username, tele_id):
 
 @dp.message_handler(regexp_commands=['graph_([1-3]*)'])
 async def send_welcome(message: types.Message, regexp_command):
-    index = int(regexp_command.group(1))
-    username = types.User.get_current().username
-    item_name = get_item(username, index)[1]
-    data = get_item(username, index)[0]
-    plt.plot(data)
-    plt.xlabel('Time')
-    plt.ylabel('Price')
-    plt.title('Price Changes Over Time')
-    buffer = io.BytesIO()  # Create an in-memory buffer
-    plt.savefig(buffer, format='png')  # Save the plot to the buffer
-    buffer.seek(0)  # Move the buffer's cursor to the beginning
+    try:
+        index = int(regexp_command.group(1))
+        username = types.User.get_current().username
+        item_name = get_item(username, index)[1]
+        data = get_item(username, index)[0]
+        plt.plot(data)
+        plt.xlabel('Time')
+        plt.ylabel('Price')
+        plt.title('Price Changes Over Time')
+        buffer = io.BytesIO()  # Create an in-memory buffer
+        plt.savefig(buffer, format='png')  # Save the plot to the buffer
+        buffer.seek(0)  # Move the buffer's cursor to the beginning
 
-    image = Image.open(buffer)
-    photo = buffer.getvalue()
+        image = Image.open(buffer)
+        photo = buffer.getvalue()
 
-    await bot.send_photo(chat_id=message.chat.id, photo=photo)
-    await message.reply(f"This is the graph for item {item_name}")
+        await bot.send_photo(chat_id=message.chat.id, photo=photo)
+        await message.reply(f"This is the graph for item: {item_name}")
+    except IndexError:
+        await message.answer(f"Sorry you do not have a saved item with index: {index}")
 
 
 if __name__ == '__main__':
