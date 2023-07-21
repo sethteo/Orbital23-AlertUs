@@ -40,6 +40,7 @@ storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
 
+# Set states to enable the use of NTUC and Cold Storage buttons
 class Form(StatesGroup):
     state_ntuc = State()
     state_cs = State()
@@ -50,7 +51,7 @@ button_2 = InlineKeyboardButton(text="Cold Storage", callback_data="2")
 keyboard = InlineKeyboardMarkup().add(button_1, button_2)
 
 
-# Helper method to obtain current user's username
+# Helper method to obtain current user's username and telegram id
 def my_handler(message: types.Message):
     username = types.User.get_current().username
     tele_id = types.User.get_current().id
@@ -67,7 +68,7 @@ async def send_welcome(message: types.Message):
 # This handler will be called when user sends `/help` command
 @dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
-    # Prints out help text
+    # Saves all instruction images as variables to be sent
     help_photo = open('images/help.png', "rb")
     list_photo = open('images/list.png', "rb")
     remove_photo = open('images/remove.png', "rb")
@@ -92,15 +93,17 @@ async def begin(message: types.Message):
 # This handler will be called when user sends `/list` command
 @dp.message_handler(commands=["list"])
 async def begin(message: types.Message):
-    # Lists out all saved items of current user
+    # Lists out all saved items of current user using user's username
     items = list_item(my_handler(message)[0])
-    print(len(items))
 
+    
     if items:
+        # If user currently has saved items, loops through each item and sends item name
         for i in range(1, len(items) + 1):
             item = items[i - 1]
             await message.reply(f"{i}. {item['item_name']}")
     else:
+        # Else prints error message
         await message.reply("You do not have any saved items")
 
 
@@ -163,29 +166,35 @@ async def process_name(message: types.Message, state: FSMContext):
 
 
 # Helper method to be called if an item drops in price
-async def alert(chat_id, price, item_name):
+# Takes in user's telegram id, new price of item and name of item
+async def alert(telegram_id, price, item_name):
+    # Sends a message to the given user
     await bot.send_message(
-        chat_id=chat_id,
+        chat_id=telegram_id,
         text=f"Alert, your item: {item_name} has just dropped to {price}",
     )
 
 
 # Helper method to aid in tracking of NTUC items
 def track_ntuc(url, username, tele_id):
+    # Tries to scrape the given string by the user
     try:
         current_price = scrape_ntuc(url, username, tele_id)
         print(username)
         return f"The current price is {current_price}, I will notify you when it drops below it"
+    # Except when the link is invalid
     except:
         return "Please select the option again and input a valid link"
 
 
 # Helper method to aid in tracking of Cold Storage items
 def track_cs(url, username, tele_id):
+    # Tries to scrape the given string by the user
     try:
         current_price = scrape_cs(url, username, tele_id)
         print(username)
         return f"The current price is {current_price}, I will notify you when it drops below it"
+    # Except when the link is invalid
     except:
         return "Please select the option again and input a valid link"
 
@@ -193,31 +202,51 @@ def track_cs(url, username, tele_id):
 # This handler will be called when user sends /graph_"index"
 @dp.message_handler(regexp_commands=['graph_([1-3]*)'])
 async def send_welcome(message: types.Message, regexp_command):
+    # Tries to plot a graph based on the user's item's index
     try:
         index = int(regexp_command.group(1))
         username = types.User.get_current().username
+
+        # Fetches the item from the database using the username and index
         data = get_item(username, index)
+
+        # get_item returns an array of [price, date, itemName]
         price_data = data[0]
         date_data = data[1]
         item_name = data[2]
 
         # Plotting the graph
         plt.plot(price_data, "o-")
+
+        # Setting of axis labels
         plt.xlabel('Date')
         plt.ylabel('Price')
+
+        # Setting graph name
         plt.title(f'{item_name}')
-        buffer = io.BytesIO()  # Create an in-memory buffer
 
+        # Create an in-memory buffer so as to not store the image in native directory
+        buffer = io.BytesIO()  
+
+        # Sets points
         plt.xticks(range(len(price_data)), date_data)
-        plt.savefig(buffer, format='png')  # Save the plot to the buffer
-        buffer.seek(0)  # Move the buffer's cursor to the beginning
 
+        # Save the plot to the buffer
+        plt.savefig(buffer, format='png') 
+
+        # Move the buffer's cursor to the beginning
+        buffer.seek(0) 
+
+        # Obtaining image from buffer
         image = Image.open(buffer)
         photo = buffer.getvalue()
+
+        # Closing the current buffer
         buffer.close()
 
         await bot.send_photo(chat_id=message.chat.id, photo=photo)
         await message.reply(f"This is the graph for item: {item_name}")
+    # Except when the given index is out of the user's item array
     except IndexError:
         await message.answer(f"Sorry you do not have a saved item with index: {index}")
 
