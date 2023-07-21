@@ -4,7 +4,6 @@
 
   ### Team name:
 AlertUs
-
   ### Proposed Level of Achievement: 
 Project Gemini
 
