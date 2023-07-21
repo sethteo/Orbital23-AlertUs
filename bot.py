@@ -26,6 +26,7 @@ HELP_TEXT = (
 )
 LIST_TEXT = "\nTo view all saved items please reply '/list' "
 REMOVE_TEXT = "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
+GRAPH_TEXT = "\nTo view a price against time graph of your item, please reply '/graph_' followed by the item number of the item you wish to plot"
 
 # Configure logging
 logging.basicConfig(
@@ -64,18 +65,21 @@ async def send_welcome(message: types.Message):
 
 
 # This handler will be called when user sends `/help` command
-@dp.message_handler(commands=["help"])
+@dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
     # Prints out help text
-    help_photo = open("images/help.png", "rb")
-    list_photo = open("images/list.png", "rb")
-    remove_photo = open("images/remove.png", "rb")
+    help_photo = open('images/help.png', "rb")
+    list_photo = open('images/list.png', "rb")
+    remove_photo = open('images/remove.png', "rb")
+    graph_photo = open('images/graph.png', "rb")
     await bot.send_photo(chat_id=message.chat.id, photo=help_photo)
     await message.reply(HELP_TEXT)
     await bot.send_photo(chat_id=message.chat.id, photo=list_photo)
     await message.reply(LIST_TEXT)
     await bot.send_photo(chat_id=message.chat.id, photo=remove_photo)
     await message.reply(REMOVE_TEXT)
+    await bot.send_photo(chat_id=message.chat.id, photo=graph_photo)
+    await message.reply(GRAPH_TEXT)
 
 
 # This handler will be called when user sends `/begin` command
