@@ -23,4 +23,32 @@ Our vision at AlertUS is to improve the online shopping experience by creating a
 
 </div>
 
-<div id="body"></div>
+<div id="techstack">
+
+### Tech stack
+- Python
+- Telegram
+- Heroku
+- MongoDB
+  
+</div>
+
+<div id="features">
+  
+### Features
+
+### /help command
+<img width="286" alt="Screenshot 2023-07-21 at 9 16 09 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/094a5fef-9bb1-44a8-9701-48fbcafec3c1">
+<img width="287" alt="Screenshot 2023-07-21 at 9 17 02 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/8aa6d1be-a476-461f-98d3-eeaf89aae8c8">
+<img width="286" alt="Screenshot 2023-07-21 at 9 17 18 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/6b087e52-e389-4c8f-a98c-79760492af50">
+
+### /list command
+<img width="415" alt="Screenshot 2023-07-21 at 9 17 57 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/be0fc51f-5496-49e4-b4ec-061209e2a3dc">
+
+### /remove command
+<img width="411" alt="Screenshot 2023-07-21 at 9 18 24 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/512fed38-a816-4f35-b79e-181e20750545">
+</div>
+
+<div id="database>
+  <img width="614" alt="Screenshot 2023-07-21 at 9 19 04 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/e7ffacdd-047e-412f-9092-3ca8cccea583">
+</div>
