@@ -91,7 +91,14 @@ def get_item(username, index):
     current_user = users.find_one({"name": username})
     prices = current_user['items'][index - 1]['price']
     item_name = current_user['items'][index - 1]['item_name']
+    dates = current_user['items'][index - 1]['date']
     updated_prices = []
+    updated_dates = []
     for price in prices:
         updated_prices.append(float(price.replace('$', '')))
-    return [updated_prices, item_name]
+    for date in dates:
+        date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
+        formatted_date = date_obj.strftime("%d/%m")
+        updated_dates.append(formatted_date)
+
+    return [updated_prices, updated_dates, item_name]

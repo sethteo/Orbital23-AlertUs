@@ -26,6 +26,7 @@ HELP_TEXT = (
 )
 LIST_TEXT = "\nTo view all saved items please reply '/list' "
 REMOVE_TEXT = "\nTo remove an item please reply '/remove_' followed by the item number of the item you wish to remove"
+GRAPH_TEXT = "\nTo view a price against time graph of your item, please reply '/graph_' followed by the item number of the item you wish to plot"
 
 # Configure logging
 logging.basicConfig(
@@ -64,18 +65,21 @@ async def send_welcome(message: types.Message):
 
 
 # This handler will be called when user sends `/help` command
-@dp.message_handler(commands=["help"])
+@dp.message_handler(commands=['help'])
 async def send_welcome(message: types.Message):
     # Prints out help text
-    help_photo = open("images/help.png", "rb")
-    list_photo = open("images/list.png", "rb")
-    remove_photo = open("images/remove.png", "rb")
+    help_photo = open('images/help.png', "rb")
+    list_photo = open('images/list.png', "rb")
+    remove_photo = open('images/remove.png', "rb")
+    graph_photo = open('images/graph.png', "rb")
     await bot.send_photo(chat_id=message.chat.id, photo=help_photo)
     await message.reply(HELP_TEXT)
     await bot.send_photo(chat_id=message.chat.id, photo=list_photo)
     await message.reply(LIST_TEXT)
     await bot.send_photo(chat_id=message.chat.id, photo=remove_photo)
     await message.reply(REMOVE_TEXT)
+    await bot.send_photo(chat_id=message.chat.id, photo=graph_photo)
+    await message.reply(GRAPH_TEXT)
 
 
 # This handler will be called when user sends `/begin` command
@@ -187,40 +191,30 @@ def track_cs(url, username, tele_id):
 
 
 # This handler will be called when user sends /graph_"index"
-@dp.message_handler(regexp_commands=["graph_([1-3]*)"])
+@dp.message_handler(regexp_commands=['graph_([1-3]*)'])
 async def send_welcome(message: types.Message, regexp_command):
     try:
         index = int(regexp_command.group(1))
         username = types.User.get_current().username
-        item_name = get_item(username, index)[1]
-        data = get_item(username, index)[0]
+        data = get_item(username, index)
+        price_data = data[0]
+        date_data = data[1]
+        item_name = data[2]
+
         # Plotting the graph
-        plt.plot(data, "o-")
-        plt.xlabel("Time")
-        plt.ylabel("Price")
-        plt.title("Price Changes Over Time")
-        # Create an in-memory buffer
-        buffer = io.BytesIO()  
-        time_points = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-        ]  # TO CHANGE
-        plt.xticks(range(len(data)), time_points)
-        # Save the plot to the buffer
-        plt.savefig(buffer, format="png")  
-        # Move the buffer's cursor to the beginning
-        buffer.seek(0)  
+        plt.plot(price_data, "o-")
+        plt.xlabel('Date')
+        plt.ylabel('Price')
+        plt.title(f'{item_name}')
+        buffer = io.BytesIO()  # Create an in-memory buffer
+
+        plt.xticks(range(len(price_data)), date_data)
+        plt.savefig(buffer, format='png')  # Save the plot to the buffer
+        buffer.seek(0)  # Move the buffer's cursor to the beginning
 
         image = Image.open(buffer)
         photo = buffer.getvalue()
+        buffer.close()
 
         await bot.send_photo(chat_id=message.chat.id, photo=photo)
         await message.reply(f"This is the graph for item: {item_name}")
