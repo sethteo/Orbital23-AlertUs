@@ -19,9 +19,13 @@ def update_price():
             print(new_price)
             append_price(currentItemUrl, user['name'], new_price)
 
-
+# Loops through every user and calls the compare price function with each user an input
 def check_price():
     for user in users:
+        # compare_price is a method in the database which loops through
+        # all the items of the user and checks if any of the given prices is greater than the initial price
+        # If any of the items price is lower than the initial price
+        # It returns and array which contains the lowered price and the name of item
         if compare_price(user):
             chat_id = user['tele_id']
             price = compare_price(user)[0]
