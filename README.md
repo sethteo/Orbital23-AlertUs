@@ -3,7 +3,7 @@
 <div id="head">
 
   ### Team name:
-       AlertUs
+AlertUs
 
   ### Proposed Level of Achievement: 
 Project Gemini
