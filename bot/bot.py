@@ -137,32 +137,38 @@ async def function(call: types.callback_query):
 @dp.message_handler(state=Form.state_ntuc)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
+    url = message.text
+    username = my_handler(message)[0]
+    tele_id = my_handler(message)[1]
+    
+    # Checks if given url is a duplicate
+    if check_duplicate(url, my_handler(message)[0]):
+        await message.answer("You have already saved this item, please try again.")
     # Checks if user has sufficient slots
-    if check_user_slots(my_handler(message)[0]):
-        await message.reply(
-            track_ntuc(message.text, my_handler(message)[0], my_handler(message)[1])
-        )
+    elif check_user_slots(my_handler(message)[0]):
+        await message.reply(track_ntuc(url, username, tele_id))
     # Else prints out error message
     else:
-        await message.answer(
-            "Sorry you do not have enough saved slots, please delete an item using /remove"
-        )
+        await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
 
 
 # This handler is called if state is "Cold Storage"
 @dp.message_handler(state=Form.state_cs)
 async def process_name(message: types.Message, state: FSMContext):
     await state.finish()
+    url = message.text
+    username = my_handler(message)[0]
+    tele_id = my_handler(message)[1]
+
+    # Checks if given url is a duplicate
+    if check_duplicate(url, username):
+        await message.answer("You have already saved this item, please try again.")
     # Checks if user has sufficient slots
-    if check_user_slots(my_handler(message)[0]):
-        await message.reply(
-            track_cs(message.text, my_handler(message)[0], my_handler(message)[1])
-        )
+    elif check_user_slots(my_handler(message)[0]):
+        await message.reply(track_cs(message.text, username, tele_id))
     # Else prints out error message
     else:
-        await message.answer(
-            "Sorry you do not have enough saved slots, please delete an item using /remove"
-        )
+        await message.answer("Sorry you do not have enough saved slots, please delete an item using /remove")
 
 
 # Helper method to be called if an item drops in price
