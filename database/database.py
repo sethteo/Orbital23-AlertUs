@@ -130,3 +130,13 @@ def get_item(username, index):
         updated_dates.append(formatted_date)
 
     return [updated_prices, updated_dates, item_name]
+
+def check_duplicate(url, username):
+    current_user = users.find_one({"name": username})
+    items = current_user['items']
+
+    for item in items:
+        if item['itemUrl'] == url:
+            return True
+
+    return False
