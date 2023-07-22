@@ -38,9 +38,9 @@ Our vision at AlertUS is to improve the online shopping experience by creating a
 ### Features
 
 ### /help command
-<img width="286" alt="Screenshot 2023-07-21 at 9 16 09 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/094a5fef-9bb1-44a8-9701-48fbcafec3c1">
-<img width="287" alt="Screenshot 2023-07-21 at 9 17 02 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/8aa6d1be-a476-461f-98d3-eeaf89aae8c8">
-<img width="286" alt="Screenshot 2023-07-21 at 9 17 18 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/6b087e52-e389-4c8f-a98c-79760492af50">
+<img width="260" alt="Screenshot 2023-07-21 at 9 16 09 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/094a5fef-9bb1-44a8-9701-48fbcafec3c1">
+<img width="260" alt="Screenshot 2023-07-21 at 9 17 02 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/8aa6d1be-a476-461f-98d3-eeaf89aae8c8">
+<img width="260" alt="Screenshot 2023-07-21 at 9 17 18 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/6b087e52-e389-4c8f-a98c-79760492af50">
 
 ### /list command
 <img width="415" alt="Screenshot 2023-07-21 at 9 17 57 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/be0fc51f-5496-49e4-b4ec-061209e2a3dc">
