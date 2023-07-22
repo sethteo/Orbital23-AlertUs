@@ -38,7 +38,7 @@ Our vision at AlertUS is to improve the online shopping experience by creating a
 ### Features
 
 ### /help command
-Our Telegram bot will incorporate a helpful '/help' function to assist users from the start. Instructions will be provided along with images for the user to easily follow the necessary steps to start their usage of the app. For Basic tier members, three item slots will be allocated for tracking. 
+<p>Our Telegram bot will incorporate a helpful '/help' function to assist users from the start. Instructions will be provided along with images for the user to easily follow the necessary steps to start their usage of the app. For Basic tier members, three item slots will be allocated for tracking.</p>
 <img width="260" alt="Screenshot 2023-07-21 at 9 16 09 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/094a5fef-9bb1-44a8-9701-48fbcafec3c1">
 <img width="260" alt="Screenshot 2023-07-21 at 9 17 02 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/8aa6d1be-a476-461f-98d3-eeaf89aae8c8">
 <img width="260" alt="Screenshot 2023-07-21 at 9 17 18 PM" src="https://github.com/sethteo/Orbital23-AlertUs/assets/106515785/6b087e52-e389-4c8f-a98c-79760492af50">
