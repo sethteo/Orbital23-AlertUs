@@ -112,11 +112,9 @@ async def begin(message: types.Message):
 async def remove_helper(message: types.Message, regexp_command):
     index = int(regexp_command.group(1))
     # Removes the item of the user based on the given index
-    try:
-        remove_item(my_handler(message)[0], (index - 1))
+    if remove_item(my_handler(message)[0], (index - 1)):
         await message.reply(f"Successfully removed item {index}")
-    # Catches index out of bounds error, e.g. when user inputs an index not in range of array
-    except IndexError:
+    else:
         await message.reply(f"There is no such item of index {index}")
 
 
